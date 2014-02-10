@@ -168,10 +168,11 @@ p_histogram <- function(t) {
   nonNAindex <- which(!is.na(series.return[,t]))
   chart.Histogram(series.return[nonNAindex,t],
                   main=paste(t,"Risk Measures"),
-                  methods=c("add.density","add.rug","add.normal","add.qqplot","add.risk")
+                  methods=c("add.density","add.rug","add.normal","add.qqplot") # ,"add.risk")
                   )
 
 }
+tickers[which(tickers=="SPX")] <- "GSPC"
 sapply(tickers,p_histogram) # one ticker per plot
 
 # risk/return scatter
