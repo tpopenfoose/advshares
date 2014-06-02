@@ -92,6 +92,7 @@ charts.myPerformanceSummary <- function (R, Rb, Rf = 0, main = NULL, geometric =
 }
 
 # not active: HDGB, MULT, YPRO, HOLD, GEUR, GGBP, GYEN, GLDE
+tickers_slipstream = c("MINC","HYLD","ROOF","FWDB","FWDI","QEH","AADR","RSP")
 tickers_short = c("HDGE","HDGI")
 tickers_long_short = c("AGLS","QEH")
 tickers_multi_asset = c("GTAA","MATH","DBIZ","GIVE","VEGA")
@@ -102,9 +103,10 @@ tickers_income = c("HYLD","MINC","FWDB")
 tickers_reference = c("^GSPC","TLT")
 tickers_mbcbehf = c("CFT","HYG","LQD","MUNI","PSK","RSP")
 
-tickers <- c(tickers_short,tickers_long_short,tickers_multi_asset,
+tickers <- unique(c(tickers_short,tickers_long_short,tickers_multi_asset,
              tickers_dom_equity,tickers_intl_equity,tickers_global_equity,
-             tickers_income,tickers_reference,tickers_mbcbehf)
+             tickers_income,tickers_reference,tickers_mbcbehf,tickers_slipstream
+             ))
 
 series.env <- new.env()
 start.date <- "2010-07-12"
@@ -148,6 +150,7 @@ p_summary <- function(t,title) {
                               main=title)
 }
 
+p_summary(tickers_slipstream,"Slipstream Component Strategy")
 p_summary(tickers_short,"Short Alternative Strategy")
 p_summary(tickers_long_short,"Long/Short Alternative Strategy")
 p_summary(tickers_multi_asset,"Multi-Asset Alternative Strategy")
@@ -190,6 +193,7 @@ p_scatter <- function(t,title) {
 tickers_reference[which(tickers_reference=="^GSPC")] <- "GSPC"
 op <- par(no.readonly=TRUE)
 par(mfrow=c(2,2))
+p_scatter(c(tickers_slipstream,tickers_reference),"Slipstream Component Strategy")
 p_scatter(c(tickers_short,tickers_reference),"Short Alternative Strategy")
 p_scatter(c(tickers_long_short,tickers_reference),"Long/Short Alternative Strategy")
 p_scatter(c(tickers_multi_asset,tickers_reference),"Multi-Asset Alternative Strategy")
@@ -212,6 +216,7 @@ p_rolling <- function(t,title) {
                            legend.loc="topleft"
                            )
 }
+p_rolling(c(tickers_slipstream,tickers_reference),"Slipstream Component Strategy")
 p_rolling(c(tickers_short,tickers_reference),"Short Alternative Strategy")
 p_rolling(c(tickers_long_short,tickers_reference),"Long/Short Alternative Strategy")
 p_rolling(c(tickers_multi_asset,tickers_reference),"Multi-Asset Alternative Strategy")
@@ -222,14 +227,19 @@ p_rolling(c(tickers_income,tickers_reference),"Income Core Strategy")
 p_rolling(c(tickers_mbcbehf,tickers_reference),"Alternative Portfolio")
 
 # relative performance
-p_relative <- function(t,ref,title) {
-  chart.RelativePerformance(series.return[,t],
-                            series.return[,ref],
+p_relative <- function(t,ref,title,lastp="10 years") {
+  chart.RelativePerformance(last(series.return[,t],lastp),
+                            last(series.return[,ref],lastp),
                             main=paste(title,"Performance Relative to",ref),
                             colorset=gencolor(length(t)+1),
                             legend.loc="topleft"
   )
 }
+
+p_relative(tickers_slipstream,"GSPC","Slipstream Component Strategy")
+p_relative(tickers_slipstream,"TLT","Slipstream Component Strategy")
+p_relative(tickers_slipstream,"GSPC","Slipstream Component Strategy","3 months")
+p_relative(tickers_slipstream,"TLT","Slipstream Component Strategy","3 months")
 
 p_relative(tickers_short,"GSPC","Short Alternative Strategy")
 p_relative(tickers_long_short,"GSPC","Long/Short Alternative Strategy")
